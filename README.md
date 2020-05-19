@@ -12,16 +12,16 @@
 Install all dependencies using this commands:
 
 ```sh
-yarn install
+npm install
 ```
 
 *This does a clean install of all npm packages.*
-*Elm packages are automatically installed by doing `yarn dev` or `yarn prod`*
+*Elm packages are automatically installed by doing `npm run dev` or `npm run prod`*
 
 ## Serve locally
 
 ```sh
-yarn dev
+npm run dev
 ```
 
 * Access app at `http://localhost:8080/`
