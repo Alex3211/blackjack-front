@@ -1,14 +1,10 @@
 {
-  "name": "elm-webpack-4-starter",
+  "name": "blackjack-front",
   "version": "0.0.1",
-  "description": "Elm starter template with webpack 4",
+  "description": "",
   "repository": {
-    "type": "git",
-    "url": "https://github.com/romariolopezc/elm-webpack-4-starter"
   },
   "contributors": [
-    "Romario Lopez <romariolopezc@gmail.com>",
-    "Geoffrey Roguelon <geoffrey.roguelon@gmail.com>"
   ],
   "engines": {
     "node": ">=10.19.0"
