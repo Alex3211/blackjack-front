@@ -2,10 +2,8 @@
   "name": "blackjack-front",
   "version": "0.0.1",
   "description": "",
-  "repository": {
-  },
-  "contributors": [
-  ],
+  "repository": {},
+  "contributors": [],
   "engines": {
     "node": ">=10.19.0"
   },

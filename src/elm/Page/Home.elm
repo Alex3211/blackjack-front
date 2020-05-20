@@ -21,7 +21,7 @@ type alias Model =
 init : Session -> ( Model, Cmd Msg )
 init session =
     ( { session = session
-      , pageTitle = "Home"
+      , pageTitle = "Welcome to our game"
       , pageBody = "This is the home page"
       , counter = 0
       }

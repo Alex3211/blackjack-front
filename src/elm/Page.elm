@@ -1,5 +1,6 @@
 module Page exposing (Page(..), view)
 
+import Asset
 import Browser exposing (Document)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -31,7 +32,7 @@ in the header. (This comes up during slow page transitions.)
 -}
 view : Page -> { title : String, content : Html msg } -> Document msg
 view page { title, content } =
-    { title = title ++ " - Elm SPA"
+    { title = title ++ " - Blackjack"
     , body =
         [ viewHeader page
         , content
@@ -44,8 +45,9 @@ viewHeader : Page -> Html msg
 viewHeader page =
     nav [ class "navbar navbar-expand-lg navbar-light bg-light" ]
         [ div [ class "container" ]
-            [ a [ class "navbar-brand", Route.href Route.Home ]
-                [ text "ElmSPA" ]
+            [ img [ Asset.srcFromString "icon.png" ] []
+            , a [ class "navbar-brand", Route.href Route.Home ]
+                [ text "Blackjack" ]
             , ul [ class "nav navbar-nav pull-xs-right" ] <|
                 navbarLink page Route.Home [ text "Home" ]
                     :: viewMenu page

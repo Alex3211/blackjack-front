@@ -1,4 +1,4 @@
-module Asset exposing (Image, error, src)
+module Asset exposing (Image, srcFromString, error, src)
 
 {-| Assets, such as images, videos, and audio. (We only have images for now.)
 
@@ -28,7 +28,9 @@ image : String -> Image
 image filename =
     Image ("/assets/images/" ++ filename)
 
-
+concatAsset : String -> String
+concatAsset name =
+    "/assets/images/" ++ name
 
 -- USING IMAGES
 
@@ -36,3 +38,7 @@ image filename =
 src : Image -> Attribute msg
 src (Image url) =
     Attr.src url
+
+srcFromString : String -> Attribute msg
+srcFromString myImg =
+    Attr.src (concatAsset myImg)

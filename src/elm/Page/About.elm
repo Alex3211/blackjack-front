@@ -12,15 +12,13 @@ import Session exposing (Session)
 type alias Model =
     { session : Session
     , pageTitle : String
-    , pageBody : String
     }
 
 
 init : Session -> ( Model, Cmd Msg )
 init session =
     ( { session = session
-      , pageTitle = "About"
-      , pageBody = "This is the about page"
+      , pageTitle = "Our team"
       }
     , Cmd.none
     )
@@ -36,7 +34,10 @@ view model =
     , content =
         div [ class "container" ]
             [ h2 [] [ text model.pageTitle ]
-            , div [] [ text model.pageBody ]
+            , div [] [ text "Florian BONHOURE" ]
+            , div [] [ text "Dylan HERVE" ]
+            , div [] [ text "Alexandre PICARD" ]
+            , div [] [ text "Hervé SIMAER" ]
             ]
     }
 
