@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser exposing (Document)
 import Browser.Navigation as Nav
-import Html exposing (..)
+import Html exposing (map)
 import Json.Decode exposing (Value)
 import Page
 import Page.About as About

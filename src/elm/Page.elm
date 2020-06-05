@@ -2,9 +2,9 @@ module Page exposing (Page(..), view)
 
 import Asset
 import Browser exposing (Document)
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html exposing (Html, text, div, a, img, nav, ul, footer, li, p, button)
+import Html.Attributes exposing (class, align, style, classList)
+import Html.Events exposing (onClick)
 import Route exposing (Route)
 
 
@@ -68,7 +68,7 @@ viewMenu page =
 viewFooter : Html msg
 viewFooter =
     footer []
-        [ div [] []
+        [ div [ align "left" ] [ img [ Asset.srcFromString "intech.png" ] [] ]
         ]
 
 
