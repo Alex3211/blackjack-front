@@ -90,14 +90,14 @@ type Msg
 getCards : Cmd Msg
 getCards =
   Http.get
-    { url = "https://elm-lang.org/assets/public-opinion.txt"
+    { url = "https://127.0.0.1:8000/game"
     , expect = Http.expectString DataReceived
     }
 
 sendPseudo : Cmd Msg
 sendPseudo  =
   Http.post
-    { url = "https://example.com/books"
+    { url = "https://127.0.0.1:8000/post/pseudo"
     , body = pseudo
     , expect = Http.expectString DataReceived
     }
