@@ -94,12 +94,12 @@ getCards =
     , expect = Http.expectString DataReceived
     }
 
-sendPseudo : Cmd Msg
-sendPseudo  =
+sendPseudo : String -> Cmd Msg
+sendPseudo pseudo =
   Http.post
     { url = "https://127.0.0.1:8000/post/pseudo"
-    , body = pseudo
-    , expect = Http.expectString DataReceived
+    , body = Http.emptyBody
+    , expect = Http.expectJson SendPseudo sendPseudo 
     }
     
 
@@ -118,14 +118,15 @@ update msg model =
         Change (newContent) ->
             ( { model | content = newContent }, Cmd.none )
 
-        
         SendPseudo(Ok value) -> ( { model | result = value }, Cmd.none )
         SendPseudo(_) -> ( { model | error = "Error during request" }, Cmd.none )
 
-            -- ( { model | result = (decodeString (keyValuePairs int) data). }, Cmd.none )
+        -- ( { model | result = (decodeString (keyValuePairs int) data). }, Cmd.none )
 
--- decodeString (keyValuePairs int) "{ \"alice\": 42, \"bob\": 99 }"
---   == Ok [("alice", 42), ("bob", 99)]
+        -- decodeString (keyValuePairs int) "{ \"alice\": 42, \"bob\": 99 }"
+        --   == Ok [("alice", 42), ("bob", 99)] 
+
+
 -- SUBSCRIPTIONS
 
 
