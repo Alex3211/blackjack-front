@@ -1,15 +1,18 @@
 module Page.Home exposing (Model, Msg, init, subscriptions, toSession, update, view)
 
-import Dict
 import Asset
+import Asset exposing (error)
+import Dict
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Http
+import Http exposing (..)
 import Json.Decode exposing (..)
-import Session exposing (..)
-import Result exposing (Result)
+import Json.Encode exposing (..)
 import Page.About exposing (Model)
+import Result exposing (Result)
+import Session exposing (..)
+import String exposing (String)
 
 
 
@@ -39,6 +42,7 @@ type alias Model =
     , content : String
     , error : String
     , result : String
+    , output : String
     }
 
 
@@ -50,6 +54,7 @@ init session =
       , content = ""
       , error = ""
       , result = ""
+      , output = ""
       }
     , Cmd.none
     )
@@ -61,21 +66,35 @@ init session =
 
 view : Model -> { title : String, content : Html Msg }
 view model =
-    { title = model.pageTitle
-    , content =
-        div [ class "container" ]
-            [ h2 [ align "center" ] [ text model.pageTitle ]
-            , div [ align "center" ] [ img [ Asset.srcFromString "Blackjack.png" ] [] ]
-            , hr [] []
-            , p [] []
-            , div [ class "form-group"]
-                [ input [ class "form-control", placeholder "Pseudo", Html.Attributes.value model.content, onInput Change ] []
-                , button [ class "btn btn-secondary", onClick SendPseudo  ] [ text "Set" ]
-                , div [] [ text (String.reverse model.content) ]
+    let
+        outDiv = case model.error of
+            Nothing ->
+                div []
+                    [ label [ for "outputUpcase" ] [ text "Output" ]
+                    , input [ type_ "text", id "outputUpcase", readonly True, Html.Attributes.value model.output ] []
+                    ]
+
+            Just err ->
+                div []
+                    [ label [ for "errorUpcase" ] [ text "Error" ]
+                    , input [ type_ "text", id "errorUpcase", readonly True, Html.Attributes.value err ] []
+                    ]
+    in
+        { title = model.pageTitle
+        , content =
+            div [ class "container" ]
+                [ h2 [ align "center" ] [ text model.pageTitle ]
+                , div [ align "center" ] [ img [ Asset.srcFromString "Blackjack.png" ] [] ]
+                , hr [] []
+                , p [] []
+                , div [ class "form-group"]
+                    [ input [ class "form-control", placeholder "Pseudo", Html.Attributes.value model.content, onInput Change ] []
+                    , button [ class "btn btn-secondary", onInput InputString ] [ text "Set" ]
+                    , div [] [ text (String.reverse model.content) ]
+                    ]
+                , button [ class "btn btn-primary", onClick SendHttpRequest ] [ text "Get card" ]
                 ]
-            , button [ class "btn btn-primary", onClick SendHttpRequest ] [ text "Get card" ]
-            ]
-    }
+        }
 
 
 -- UPDATE
@@ -85,23 +104,15 @@ type Msg
     = SendHttpRequest
     | DataReceived (Result Http.Error String)
     | Change String
-    | SendPseudo (Result Http.Error String)
+    | UpcaseRequest ( Result Http.Error String )
+    | InputString String
 
 getCards : Cmd Msg
 getCards =
   Http.get
-    { url = "https://elm-lang.org/assets/public-opinion.txt"
+    { url = "https://127.0.0.1:8080/game"
     , expect = Http.expectString DataReceived
     }
-
-sendPseudo : Cmd Msg
-sendPseudo  =
-  Http.post
-    { url = "https://example.com/books"
-    , body = pseudo
-    , expect = Http.expectString DataReceived
-    }
-    
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -118,14 +129,25 @@ update msg model =
         Change (newContent) ->
             ( { model | content = newContent }, Cmd.none )
 
-        
-        SendPseudo(Ok value) -> ( { model | result = value }, Cmd.none )
-        SendPseudo(_) -> ( { model | error = "Error during request" }, Cmd.none )
+        UpcaseRequest (Ok response) ->
+            ( { model | output = response, error = "" }, Cmd.none )
 
-            -- ( { model | result = (decodeString (keyValuePairs int) data). }, Cmd.none )
+        UpcaseRequest (Err err) ->
+            let
+                errMsg = case err of
+                    Http.Timeout ->
+                        "Request timeout"
 
--- decodeString (keyValuePairs int) "{ \"alice\": 42, \"bob\": 99 }"
---   == Ok [("alice", 42), ("bob", 99)]
+                    Http.NetworkError ->
+                        "Network error"
+
+            in
+                ( { model | output = "", error = "" }, Cmd.none )
+
+        InputString str ->
+            ( model, upcaseRequest str )
+
+
 -- SUBSCRIPTIONS
 
 
@@ -141,3 +163,26 @@ subscriptions _ =
 toSession : Model -> Session
 toSession model =
     model.session
+
+
+-- HELPERS
+
+upcaseSuccessDecoder : Json.Decode.Decoder String
+upcaseSuccessDecoder = Json.Decode.field "output" Json.Decode.string
+
+upcaseErrorDecoder : Json.Decode.Decoder String
+upcaseErrorDecoder = Json.Decode.field "error" Json.Decode.string
+
+upcaseRequestEncoder : String -> Json.Encode.Value
+upcaseRequestEncoder str = Json.Encode.object [ ( "input", Json.Encode.string str ) ]
+
+upcaseRequest : String -> Cmd Msg
+upcaseRequest str =
+    let
+        req = Http.post {
+            url = "http://127.0.0.1:8080/upcase"
+            , body = ( Http.jsonBody <| upcaseRequestEncoder str )
+            , expect = Http.expectJson upcaseSuccessDecoder
+            }
+    in
+        Http.post { UpcaseRequest req }
